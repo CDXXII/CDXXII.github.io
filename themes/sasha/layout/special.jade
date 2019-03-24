@@ -1,0 +1,9 @@
+extends partial/layout
+
+block container
+    .special(page)
+        article.special-block
+            h1.special-title
+                != page.title
+            .special-content
+                != page.content

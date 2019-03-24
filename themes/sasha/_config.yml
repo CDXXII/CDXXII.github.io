@@ -1,0 +1,9 @@
+menu:
+    Blog: /
+    About: /about/
+
+favicon: /favicon.ico
+
+# Analytics
+# google-analytics:
+ga: UA-110485612-1

@@ -1,0 +1,55 @@
+@media screen and (min-width: 600px) {
+    main.container {
+        margin: 1em 20px;
+    }
+    .wrap {
+        width: 600px;
+        margin: 0 auto;
+    }
+    header {
+        padding: 20px 0;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    main.container {
+        margin: 0 20px;
+    }
+    .wrap {
+        width: 100%;
+    }
+    header {
+        padding: 10px 0;
+        li.nav-list-item {
+            padding: 10px 10px;
+        }
+    }
+    main.container,
+    .home.post-list,
+    .post-content {
+        h2, h3, h4, h5, h6 {
+            max-width: 350px;
+            left: 15px;
+        }
+    }
+    .home.post-list {
+        margin: 0;
+        .post-list-item {
+            .post-info {
+                position: static;
+
+            }
+            .post-title {
+                margin-left: 0;
+                font-size: 16px;
+            }
+        }
+    }
+    .post,
+    .special {
+        line-height: 1.8;
+    }
+    .paginator {
+        margin: 1.5em 0;
+    }
+}

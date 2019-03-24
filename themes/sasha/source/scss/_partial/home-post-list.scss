@@ -1,0 +1,23 @@
+.home.post-list {
+    margin: 1em 0;
+    .post-list-item {
+        position: relative;
+        padding: .1em 0 .1em;
+        border-bottom: 1px solid #e6e6e6;
+        &:last-child {
+            border-bottom: 0;
+        }
+        .post-info {
+            position: absolute;
+            top: 14px;
+            left: 0;
+            font-size: .8em;
+            color: #999;
+        }
+        .post-title {
+            margin-left: 6em;
+            font-size: 20px;
+        }
+
+    }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "hexo-theme-sasha",
+  "version": "0.0.1",
+  "description": "Just another hexo theme",
+  "scripts": {
+    "sass": "gulp sass"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-autoprefixer": "^3.0.2",
+    "gulp-sass": "^2.0.4"
+  }
+}
