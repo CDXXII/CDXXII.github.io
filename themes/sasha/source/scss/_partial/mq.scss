@@ -1,9 +1,9 @@
-@media screen and (min-width: 600px) {
+@media screen and (min-width: 700px) {
     main.container {
         margin: 1em 20px;
     }
     .wrap {
-        width: 600px;
+        width: 700px;
         margin: 0 auto;
     }
     header {
@@ -11,7 +11,7 @@
     }
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 700px) {
     main.container {
         margin: 0 20px;
     }
@@ -50,6 +50,6 @@
         line-height: 1.8;
     }
     .paginator {
-        margin: 1.5em 0;
+        margin: 2em 0;
     }
 }
