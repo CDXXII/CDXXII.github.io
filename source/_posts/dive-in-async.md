@@ -93,7 +93,7 @@ foo.say(); // Don't Panic!
 通常 `await` 会用来等待 `Promise` 对象。如果该值不是一个 `Promise` 对象(或 `thenable` 对象)，`await` 会把该值转换成状态为 resolved 的 `Promise` 对象，然后等待其处理结果。使用 `await` 等待一个被调用的方法，则会执行该方法并将其返回值转换为 `Promise` 对象，然后同样等待其处理结果。执行过程遇到的任何同步异常都会导致 `Promise` 对象的状态变成 rejected。
 
 ```js
-function someAsyncThing() {
+async function someAsyncThing() {
   throw 'oops';
   await Promise.resolve('something happens'); // expression is unreachable!
 }; // Uncaught (in promise) oops
