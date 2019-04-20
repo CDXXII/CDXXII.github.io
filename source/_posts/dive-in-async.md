@@ -90,7 +90,7 @@ foo.say(); // Don't Panic!
 
 首先，需要注意的是 `async` 函数永远都会返回一个 `Promise` 对象，如果没有显式的指定返回值则会返回一个状态为 resolved 且值为 `undefined` 的 `Promise` 对象（抛出异常且未捕获除外）。
 
-通常 `await` 会用来等待 `Promise` 对象。如果该值不是一个 `Promise` 对象(或 `thenable` 对象)，`await` 会把该值转换成状态为 resolved 的 `Promise` 对象，然后等待其处理结果。使用 `await` 等待一个被调用的方法，则会执行该方法并将其返回值转换为 `Promise` 对象，然后同样等待其处理结果。执行过程遇到的任何同步异常都会导致 `Promise` 对象的状态变成 rejected。
+通常 `await` 会用来等待 `Promise` 对象。如果该值不是一个 `Promise` 对象(或 thenable 对象)，`await` 会把该值转换成状态为 resolved 的 `Promise` 对象，然后等待其处理结果。使用 `await` 等待一个被调用的方法，则会执行该方法并将其返回值转换为 `Promise` 对象，然后同样等待其处理结果。执行过程遇到的任何同步异常都会导致 `Promise` 对象的状态变成 rejected。
 
 ```js
 async function someAsyncThing() {
@@ -231,57 +231,40 @@ p.then(() => {
 // tick:c
 ````
 
-根据现行的[规范](https://tc39.github.io/ecma262/#await)对 `await` 定义，以上代码可以修改如下：
+其中关键代码便是 `await p;`。而导致差异性的原因是因为 `p` 是一个 `Promise` 对象。`Promise` 构造器的 callback 内 `resolve(thenable)` 并不等于 `Promise.resolve(thenable)`。
+
+依照现行（V8 团队的 PR 被 merge 之前，也就是 Node.js 10 里）规范，上述代码中的 IIFE 等价于：
 
 ````js
-const p = Promise.resolve();
-
-(async () => {
+(() => {
   return new Promise(resolve => {
-    resolve(p);
-  }).then(() => {
-    console.log('after:await');
+    new Promise(res => {
+      res(p);
+    }).then(() => {
+      console.log('after:await');
+      resolve();
+    });
   });
 })();
-
-p.then(() => {
-  console.log('tick:a');
-})
-  .then(() => {
-    console.log('tick:b');
-  })
-  .then(() => {
-    console.log('tick:c');
-  });
 ````
 
-其中造成分歧的关键代码便是 `resolve(p);`（在该语句中 `p` 在现行的[规范](https://tc39.github.io/ecma262/#sec-promiseresolvethenablejob)中被定义为 `PromiseResolveThenableJob`）。之所以这样的原因是因为 `p` 是一个 `Promise` 对象。依照现行（V8 团队的 PR 被 merge 之前）的规范，`resolve(thenable) ` 并不等于 `Promise.resolve(thenable)` ，而 `resolve(non-thenable)` 等价于 `Promise.resolve(non-thenable)`。
+其中执行 `res(p);` 这条语句的时，因为 `p` 是一个 `Promise` 对象，而 `Promise` 对象都是 thenable 对象。JavaScript 引擎会创建一个 MicroTask 去处理这个 thenable 对象，  在[规范](https://tc39.github.io/ecma262/#sec-promiseresolvethenablejob)中这个 MicroTask 被定义为 PromiseResolveThenableJob。PromiseResolveThenableJob 的执行过程中会调用 thenable 对象的 `then` 方法，而 `Promise` 对象的 `then` 方法也是一个 MicroTask，所以在 loop 中，这个过程增加了两次 MicroTick。若 thenable 对象的 then 方法是一个同步方法，则这个过程只会增加一次 MicroTick。
 
-在 Node.js 10 里上述代码中的 IIFE 等价于：
+
+而在 Chrome 73 及未来版本的 Node.js 中，`res(p);` 这条语句等价于 `Promise.resolve(p)` 。即：
 
 ````js
-(async () => {
+(() => {
   return new Promise(resolve => {
-    Promise.resolve().then(() => {
-      p.then(resolve)
-    })
-  }).then(() => {
-    console.log('after:await');
+    Promise.resolve(p).then(() => {
+      console.log('after:await');
+      resolve();
+    });
   });
 })();
 ````
 
-而在 Chrome 73 及未来版本的 Node.js 中则等价于：
-
-````js
-(async () => {
-  p.then(() => {
-    console.log('after:await');
-  });
-})();
-````
-
-那这样做的好处是什么呢？显而易见，在代码执行过程中不需要再次创建用于包装的 `Promise` 对象，至少三次的 microtick 被优化到只有一个。如下图所示，这样做提高了 `async` 函数的性能。
+那这样做的好处是什么呢？显而易见，在代码执行过程中不需要再次创建用于包装的 `Promise` 对象，至少三次的 MicroTick 被优化到只有一个。如下图所示，这样做提高了 `async` 函数的性能。
 
 {% asset_img await-benchmark-optimization.svg %}
 
