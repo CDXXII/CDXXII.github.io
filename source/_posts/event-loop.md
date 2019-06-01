@@ -1,6 +1,6 @@
 ---
 title: 简述并发模型与 Event loop
-date: 2018-04-01
+date: 2016-11-21
 ---
 
 众所周知 JavaScript 是一门单线程非阻塞的脚本语言。JavaScript 的并发模型基于 event loop，而这个模型与 C 或者 Java 这种其它语言中的模型截然不同。
@@ -36,7 +36,7 @@ console.log(1);
 
 setTimeout(() => {
   console.log(2)
-}, 42)
+}, 5000)
 
 console.log(3)
 
@@ -59,7 +59,7 @@ console.log(3)
 
 8. 将队列的第一个回调函数重新压入执行栈，执行回调函数中的代码 `log(2)`，原理同步骤2，回调函数的代码执行完毕，清空执行栈。
 
-9. JavaScript 执行引擎继续轮循队列，直到队列为空。
+9. JavaScript 执行引擎继续轮询队列，直到队列为空。
 
 10. 执行完毕。
 
@@ -80,5 +80,4 @@ micro task，可以理解是在当前 task 执行结束后立即执行的任务�
 - [Loupe](http://latentflip.com/loupe/)
 - [What the heck is the event loop anyway?](https://www.youtube.com/watch?v=8aGhZQkoFbQ)
 - [Tasks, microtasks, queues and schedules](https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules)
-- [How JavaScript works: Event loop and the rise of Async programming + 5 ways to better coding with async/await](https://blog.sessionstack.com/how-javascript-works-event-loop-and-the-rise-of-async-programming-5-ways-to-better-coding-with-2f077c4438b5)
 

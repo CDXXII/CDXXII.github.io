@@ -1,11 +1,9 @@
 ---
-title: about
+title:
 layout: special
 ---
 
-42
-
-现居上海
+42，现居上海
 
 这里存在的意义
 
