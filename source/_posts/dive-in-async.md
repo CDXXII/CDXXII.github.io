@@ -7,7 +7,7 @@ date: 2018-11-11
 
 ## async function 的实现
 
-`async` 函数的本质就一个自带执行器的 `Generator` 函数。我们可以使用 `Generator` 和 `Promise` 的特性简单实现一个 `async` 函数。
+`async` 函数本质是一个自带 runner 的 `Generator` 函数。我们可以使用 `Generator` 和 `Promise` 的特性简单实现一个 `async` 函数。
 
 ```js
 function spawn(generatorFunc) {
@@ -248,7 +248,7 @@ p.then(() => {
 })();
 ````
 
-其中执行 `res(p);` 这条语句的时，因为 `p` 是一个 `Promise` 对象，而 `Promise` 对象都是 thenable 对象。JavaScript 引擎会创建一个 MicroTask 去处理这个 thenable 对象，  在[规范](https://tc39.github.io/ecma262/#sec-promiseresolvethenablejob)中这个 MicroTask 被定义为 PromiseResolveThenableJob。PromiseResolveThenableJob 的执行过程中会调用 thenable 对象的 `then` 方法，而 `Promise` 对象的 `then` 方法也是一个 MicroTask，所以在 loop 中，这个过程增加了两次 MicroTick。若 thenable 对象的 then 方法是一个同步方法，则这个过程只会增加一次 MicroTick。
+其中执行 `res(p);` 这条语句的时，因为 `p` 是一个 `Promise` 对象，而 `Promise` 对象都是 thenable 对象。所以在执行 `res()`  之前，JavaScript 引擎会创建一个 MicroTask 去处理这个 thenable 对象，  在[规范](https://tc39.github.io/ecma262/#sec-promiseresolvethenablejob)中这个 MicroTask 被定义为 PromiseResolveThenableJob。PromiseResolveThenableJob 的执行过程中会调用 thenable 对象的 `then` 方法，而 `Promise` 对象的 `then` 方法也是一个 MicroTask，所以在 loop 中，这个过程增加了两次 MicroTick。若 thenable 对象的 then 方法是一个同步方法，则这个过程只会增加一次 MicroTick。
 
 
 而在 Chrome 73 及未来版本的 Node.js 中，`res(p);` 这条语句等价于 `Promise.resolve(p)` 。即：
@@ -274,31 +274,3 @@ p.then(() => {
 - [await vs return vs return await](https://jakearchibald.com/2017/await-vs-return-vs-return-await/)
 - [Faster async functions and promises](https://v8.dev/blog/fast-async#await-under-the-hood)
 - [Difference between resolve(thenable) and resolve('non-thenable-object')](https://stackoverflow.com/questions/53894038/whats-the-difference-between-resolvethenable-and-resolvenon-thenable-object)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
