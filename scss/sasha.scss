@@ -1,0 +1,34 @@
+@charset "utf-8";
+
+@import "_partial/normalize";
+@import "_partial/base";
+@import "_partial/header";
+@import "_partial/home-post-list";
+@import "_partial/post";
+@import "_partial/footer";
+@import "_partial/special";
+@import "_partial/mq";
+
+@font-face {
+    font-family: 'rubik';
+    src: url('../fonts/rubik.woff2') format('woff2'),
+         url('../fonts/rubik.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+  font-family: 'montserrat';
+  src: url('../fonts/montserrat.woff2') format('woff2'),
+  url('../fonts/montserrat.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'sourcesanspro';
+  src: url('../fonts/sourcecodepro.woff2') format('woff2'),
+  url('../fonts/sourcecodepro.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}

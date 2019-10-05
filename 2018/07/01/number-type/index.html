@@ -1,0 +1,48 @@
+<!DOCTYPE html><html lang="en"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> JavaScript 中的数字类型 · 42</title><meta name="description" content="JavaScript 中的数字类型 - 42"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.ico"><link rel="stylesheet" href="/css/sasha.css"><link rel="search" type="application/opensearchdescription+xml" href="https://42things.com/atom.xml" title="42"></head><body><div class="wrap"><header><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/about/" target="_self" class="nav-list-link">ABOUT</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">JavaScript 中的数字类型</h1><h3 class="post-info">Jul 1, 2018</h3><div class="post-content"><div class="tip"><br>本文大量篇幅演绎自<a href="https://github.com/camsong/blog/issues/9" target="_blank" rel="noopener">此文章</a>，在此向原作者致谢！<br></div>
+
+<p>整数在计算机中二进制形式叫做机器码。规则很简单，机器码的最高位（左第一位）表示数字的正负，0 表示正数，1 表示负数，其余位按照进制转换的规则表示具体数字。如果用 8-bits 表示一个整数，则十进制的整数 +6 可表示为：00000110。十进制的整数 -5 可表示为 10000101。这里说的 +6 和 -5 便是真值，而表示它们的二进制数便是机器码。再次注意，最高位只用于表示正负，比如 10000101 的真值是 -5 而非 133。我们关于机器码和真值的讨论是基于整数范围的，那小数呢？</p>
+<h2 id="定点数和浮点数"><a href="#定点数和浮点数" class="headerlink" title="定点数和浮点数"></a>定点数和浮点数</h2><p>十进制 0.1 的如果用二进制表示是 0.00011001100110011001100110011……0011。不用说 8-bits 了，一整块硬盘也存不下 0.1 所表示的二进制小数。所以当涉及到小数，广泛应用的存储方案是定点数和浮点数两种。</p>
+<p>其中定点数，整数部分和小数部分位数固定。比如用 8-bits 字长的数串，我们假设小数点固定在正中，那么 11001001 和 00110101 分别表示 1100.1001 和 11.0101 两个数字。这种方案简单直观易理解，但是存在严重的空间浪费，以及容易溢出的问题。</p>
+<p>浮点数，是指小数点的位置是不固定的，通过科学计数法的方式控制小数点的位置，表示不同的数字。这个表示方案便是 IEEE 754 所使用的方案。</p>
+<h2 id="IEEE-754"><a href="#IEEE-754" class="headerlink" title="IEEE 754"></a>IEEE 754</h2><p>下面我们来举个例子，比如：$$ -123.456 $$ 这个数字转换成科学计数法应该是：$$ -1.23456 × 10^2 $$ </p>
+<p>这里面已经包含了 IEEE 754 标准的主要元素。我们梳理一下：</p>
+<p>首先，自然是正负号的问题，需要一个标志；然后，需要一个具体的数字，表示有效数字或者精度，如上例的 1.23456。其次，需要一个控制小数点位置的数字，如上例的 10^2。科学计数法中，底数（base）的绝对值需要大于 1 且小于 10。进制固定之后，底数应该是固定的，所以这里起决定作用的是指数，也就是上例中的 2。有了这三个元素，我们便可以很轻松的表示出一个数字，并且灵活的调节小数点位置从而控制数字正负、精度和大小。</p>
+<p>上面的要素，转换成标准语言描述，我们称表示正负的标志叫符号（Sign），表示精度的数字为尾数（Mantissa）或者有效数字（Significand），而控制小数点位置的指数就叫指数（Exponent），指数和基数（Base）共同作用参与计算。</p>
+<p>下图取自 Wikipedia，fraction 区域即等同于前面说的有效数字。区域我们直观地感受下这三个要素在一个数串中的相对关系。</p>
+<img src="/2018/07/01/number-type/General_floating_point_frac.svg">
+<p>IEEE 754 标准规定了四种表示浮点数值的方式：单精确度（32 位）、双精确度（64 位）、延伸单精确度（43 比特以上，很少使用）与延伸双精确度（79 比特以上，通常以 80 比特实做）。只有 32 位模式有强制要求，其他都是选择性的。而现在主流的语言，多提供了单精度和双精度的实现，我们在此主要比较一下这两者，它们各个部分对应上图，所使用的位数如下：</p>
+<img src="/2018/07/01/number-type/floating_point_compare.jpg">
+<h2 id="JavaScript-中的浮点数"><a href="#JavaScript-中的浮点数" class="headerlink" title="JavaScript 中的浮点数"></a>JavaScript 中的浮点数</h2><p>JavaScript 中的 <code>Number</code> 类型的实现遵循此标准，使用 64 位固定长度来表示，也就是上文所述标准的 double 双精度浮点数。64 位比特又可以分为三个部分：</p>
+<ul>
+<li>符号位S：第 1 位是正负数符号位（sign），0 代表正数，1 代表负数</li>
+<li>指数位E：中间的 11 位存储指数（exponent），用来表示次方数</li>
+<li>尾数位M：最后的 52 位是尾数（mantissa），超出的部分自动进一舍零</li>
+</ul>
+<p>实际数字就可以用以下公式来计算：$$ V = (-1)^S × 2^E × M $$</p>
+<p>注意以上的公式遵循科学计数法的规范，在十进制是为 0 &lt; M &lt; 10，到二进行就是 0 &lt; M &lt; 2。也就是说整数部分只能是 1，所以可以被舍去，只保留后面的小数部分。如 4.5 转换成二进制就是 100.1，科学计数法表示是 1.001 × 2^2，尾数位舍去 1 后 M = 001。</p>
+<p>E 是一个无符号整数，长度是 11 位，取值范围是 0 ~ 2047。−1022 至 +1023 加上 1023，指数值的大小从 1 至 2046。其中 0（二进制全为0）和 2047（二进制全为1）是特殊值。浮点小数计算时，指数值减去偏正值将是实际的指数大小。</p>
+<p>因此 [1, 1022] 表示负，[1024, 2046] 表示正。</p>
+<ul>
+<li>E 不全为 0 或不全为 1（1 ~ 2046）。这时，浮点数就采用上面的规则表示，即指数E的计算值减去 1023，得到真实值，再将有效数字 M 前加上第一位的 1。</li>
+<li>E 全为 0（0）。这时，浮点数的指数 E 等于 1023，有效数字 M 不再加上第一位的 1，而是还原为 0.xxxxxx 的小数。这样做是为了表示 ±0，以及接近于 0 的很小的数字。</li>
+<li>E 全为 1（2047）。这时，如果有效数字 M 全为 0，表示 ±无穷大（正负取决于符号位 S）；如果有效数字 M 不全为 0，表示这个数不是一个数（NaN）。</li>
+</ul>
+<p>NaN 表示为：</p>
+<img src="/2018/07/01/number-type/floating_point_NaN.png">
+<p>-Infinity（Sign位为 1）表示为：</p>
+<img src="/2018/07/01/number-type/floating_point_Infinity.png">
+<p>当 E 不全为 0 或者 1 时，公式变为：</p>
+<p>$$ V = (-1)^S × 2^{E-1023} × (M + 1) $$</p>
+<p>所以 4.5 最终表示为 S = 0，E = 10000000001（十进制为1025），M = 001。即：</p>
+<img src="/2018/07/01/number-type/floating_point_4.5.png">
+<p>我们再以 0.1 为例，0.1 转换为二进制为 0.00011001100110011001100110011……0011，即 1.00011……0011 × 2^-4。所以 E = -4 + 1023，M 舍去首位的 1，得到 100110011001……1001，最终结果如下图：</p>
+<img src="/2018/07/01/number-type/floating_point_0.1.png">
+<p>转化成十进制后为 0.100000000000000005551115123126，因此就出现了浮点误差。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 如前文所述，0.1 的实际存储值为： </span></span><br><span class="line"><span class="number">0.00011001100110011001100110011001100110011001100110011010</span></span><br><span class="line"><span class="comment">// 0.2 的实际存储值为： </span></span><br><span class="line"><span class="number">0.0011001100110011001100110011001100110011001100110011010</span></span><br><span class="line"><span class="comment">// 两数相加等于：</span></span><br><span class="line"><span class="number">0.01001100110011001100110011001100110011001100110011001100</span></span><br><span class="line"><span class="comment">// 最终转换为十进制的值为：</span></span><br><span class="line"><span class="number">0.30000000000000004</span></span><br></pre></td></tr></table></figure>
+<p>那为什么 0.1 是 0.1 呢？因为 mantissa 固定长度是 52 位，再加上省略的一位，最多可以表示的数是 2^53 = 9007199254740992，对应科学计数尾数是 9.007199254740992，这也是 JavaScript 最多能表示的精度。它的长度是 16，所以可以使用 <code>toPrecision(16)</code> 来做精度运算，超过的精度会自动做凑整处理。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a href="https://github.com/camsong/blog/issues/9" target="_blank" rel="noopener">JavaScript 浮点数陷阱及解法</a></li>
+<li><a href="http://jser.it/blog/2014/07/07/numbers-in-javascript/" target="_blank" rel="noopener">Numbers in JavaScript</a></li>
+<li><a href="https://zh.wikipedia.org/wiki/IEEE_754" target="_blank" rel="noopener">IEEE 754</a></li>
+</ul>
+</div></article></div></main><footer><div class="paginator"><a href="/2018/08/03/http-authentication/" class="prev">< PREV</a><a href="/2017/10/21/event-loop/" class="next">NEXT ></a></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-110485612-1",'auto');ga('send','pageview');</script></body></html>
