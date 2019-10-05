@@ -1,6 +1,6 @@
 ---
 title: 简述并发模型与 Event loop
-date: 2016-11-21
+date: 2017-10-21
 ---
 
 众所周知 JavaScript 是一门单线程非阻塞的脚本语言。JavaScript 的并发模型基于 event loop，而这个模型与 C 或者 Java 这种其它语言中的模型截然不同。

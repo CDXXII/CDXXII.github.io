@@ -2,6 +2,10 @@
 title: JavaScript 中的数字类型
 date: 2018-07-01
 ---
+
+<div class="tip">
+本文大量篇幅演绎自[此文章](https://github.com/camsong/blog/issues/9)，在此向原作者致谢！
+</div>
  
 整数在计算机中二进制形式叫做机器码。规则很简单，机器码的最高位（左第一位）表示数字的正负，0 表示正数，1 表示负数，其余位按照进制转换的规则表示具体数字。如果用 8-bits 表示一个整数，则十进制的整数 +6 可表示为：00000110。十进制的整数 -5 可表示为 10000101。这里说的 +6 和 -5 便是真值，而表示它们的二进制数便是机器码。再次注意，最高位只用于表示正负，比如 10000101 的真值是 -5 而非 133。我们关于机器码和真值的讨论是基于整数范围的，那小数呢？
 
@@ -91,7 +95,7 @@ $$ V = (-1)^S × 2^{E-1023} × (M + 1) $$
 
 ## 参考资料
 
-- [IEEE 754](https://zh.wikipedia.org/wiki/IEEE_754)
 - [JavaScript 浮点数陷阱及解法](https://github.com/camsong/blog/issues/9)
 - [Numbers in JavaScript](http://jser.it/blog/2014/07/07/numbers-in-javascript/)
+- [IEEE 754](https://zh.wikipedia.org/wiki/IEEE_754)
 
