@@ -4,10 +4,7 @@
     }
     .wrap {
         width: 700px;
-        margin: 0 auto;
-    }
-    header {
-        padding: 20px 0;
+        margin: 100px auto;
     }
 }
 
@@ -17,12 +14,7 @@
     }
     .wrap {
         width: 100%;
-    }
-    header {
-        padding: 10px 0;
-        li.nav-list-item {
-            padding: 10px 10px;
-        }
+        margin: 40px auto;
     }
     main.container,
     .home.post-list,
@@ -37,7 +29,6 @@
         .post-list-item {
             .post-info {
                 position: static;
-
             }
             .post-title {
                 margin-left: 0;
